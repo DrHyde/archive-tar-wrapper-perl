@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 14;
+use Test::More tests => 13;
 use Archive::Tar::Wrapper;
 use File::Which;
 
@@ -10,7 +10,6 @@ my $arch = Archive::Tar::Wrapper->new();
 # don't use those methods yourself outside these tests!
 $arch->_acquire_tar_info();
 ok( $arch->{version_info}, 'has version_info' );
-is( $arch->{tar_exit_code}, 0, 'has the expected exit code' );
 ok( defined( $arch->is_gnu ), 'is_gnu is defined' );
 ok( defined( $arch->is_bsd ), 'is_bsd is defined' );
 note('Specific tests for OpenBSD');

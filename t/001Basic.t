@@ -15,10 +15,10 @@ BEGIN { use_ok('Archive::Tar::Wrapper') }
 umask(0);
 my $arch = Archive::Tar::Wrapper->new();
 
-note('Is GNU tar? ' . $arch->is_gnu);
-note('Is BSD tar? ' . $arch->is_bsd);
-note( 'Version information: ' . $arch->{version_info} );
-note( $arch->{tar_error_msg} ) if (defined($arch->{tar_error_msg}));
+note( 'Is GNU tar? ' . $arch->is_gnu );
+note( 'Is BSD tar? ' . $arch->is_bsd );
+diag( ( "Version information:\n" . $arch->{version_info} ) );
+note( $arch->{tar_error_msg} ) if ( defined( $arch->{tar_error_msg} ) );
 
 ok( $arch->read( File::Spec->catfile( TARDIR, 'foo.tgz' ) ),
     'can open the compressed tar file' );
@@ -37,7 +37,8 @@ note('Add data');
 my $data = "this is data";
 ok( $arch->add( "foo/bar/string", \$data ), "adding data" );
 ok( $arch->locate("foo/bar/baz"), "find added file" );
-ok( $arch->add( "foo/bar/permtest", $tmploc, { perm => oct(770) } ), "adding file" );
+ok( $arch->add( "foo/bar/permtest", $tmploc, { perm => oct(770) } ),
+    "adding file" );
 
 note('Make a tarball');
 my ( $fh, $filename ) = tempfile( UNLINK => 1 );
@@ -60,11 +61,12 @@ ok( -s $f2 > 0, "Checking tarball files sizes" );
 
 is( -s $f1, -s $f2, "Comparing tarball files sizes" );
 
-my $f3 = $a2->locate("foo/bar/permtest");
+my $f3   = $a2->locate("foo/bar/permtest");
 my $perm = ( ( stat($f3) )[2] & oct('777') );
 
 SKIP: {
-    skip 'Permissions are too different on Microsoft Windows', 1 if ($Config{osname} eq 'MSWin32');
+    skip 'Permissions are too different on Microsoft Windows', 1
+      if ( $Config{osname} eq 'MSWin32' );
     is( $perm, oct(770), 'testing file permission inside the tarball' );
 }
 
@@ -75,6 +77,7 @@ close($in);
 is( $got_data, $data, "comparing file data" );
 
 note('Iterators');
+
 # required to be invoke since list_all() invokes it implicit
 $arch->list_reset();
 my @elements;
@@ -104,9 +107,11 @@ my $a4 = Archive::Tar::Wrapper->new();
 Log::Log4perl->get_logger("")->level($FATAL);
 
 SKIP: {
-    skip( "FreeBSD's tar is too lenient - skipping", 1 ) if ( $^O =~ /freebsd/i );
+    skip( "FreeBSD's tar is too lenient - skipping", 1 )
+      if ( $^O =~ /freebsd/i );
     skip 'bsdtar is too lenient', 1 if ( $a4->is_bsd() );
-    my $rc = $a4->read( File::Spec->catfile( TARDIR, 'bar.tar' ), 'bar/bar.dat', 'quack/schmack' );
+    my $rc = $a4->read( File::Spec->catfile( TARDIR, 'bar.tar' ),
+        'bar/bar.dat', 'quack/schmack' );
     is( $rc, undef, "Failure to ask for non-existent files" );
 }
 
@@ -126,7 +131,8 @@ else {
 
 SKIP: {
     skip 'Cannot check permissions on a non-existent file', 1 unless $f1;
-    skip 'Permissions are too different on Microsoft Windows', 1 if ($Config{osname} eq 'MSWin32');
+    skip 'Permissions are too different on Microsoft Windows', 1
+      if ( $Config{osname} eq 'MSWin32' );
     is( $perm, oct(664), 'testing file permissions' );
 }
 

@@ -18,7 +18,7 @@ use IPC::Open3;
 use Symbol 'gensym';
 use Carp;
 
-our $VERSION = '0.37';
+our $VERSION = '0.38';
 my $logger = get_logger();
 
 =pod
@@ -230,8 +230,6 @@ sub new {
         tar_exit_code => undef,
         is_gnu        => undef,
         is_bsd        => undef,
-        version_info  => undef,
-        tar_exit_code => undef,
         %options,
     };
 
@@ -243,11 +241,11 @@ sub new {
             $self->{tar_read_options} = '-' . $self->{tar_read_options};
         }
 
-        if ( $self->{osname} eq 'MSWin32' ) {
+        if ( $self->{osname} eq $self->{_os_names}->{mswin} ) {
             $self->_setup_mswin();
         }
         else {
-            $self->{tar} = which('tar') || which('gtar');
+            $self->{tar} = which('tar') || which('gtar') || which('bsdtar') || which('star');
         }
 
         unless ( defined $self->{tar} ) {
