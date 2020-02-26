@@ -2,7 +2,6 @@ package Archive::Tar::Wrapper::Utils::MSWindows;
 use warnings;
 use strict;
 use Exporter 'import';
-use lib './lib';
 use Archive::Tar::Wrapper::Utils::Misc qw(find_tar);
 
 our $VERSION     = '0.38';

@@ -17,6 +17,7 @@ use Config;
 use IPC::Open3;
 use Symbol 'gensym';
 use Carp;
+use Archive::Tar::Wrapper::Utils::MSWindows qw(find_win_tar);
 
 our $VERSION = '0.38';
 my $logger = get_logger();
@@ -242,7 +243,7 @@ sub new {
         }
 
         if ( $self->{osname} eq $self->{_os_names}->{mswin} ) {
-            $self->_setup_mswin();
+            $self->{tar} = find_win_tar();
         }
         else {
             $self->{tar} = which('tar') || which('gtar') || which('bsdtar') || which('star');
@@ -472,21 +473,6 @@ sub _acquire_tar_info {
       unless ( $self->{tar_exit_code} == 0 );
     $self->{is_gnu} = 1 if ( $self->{version_info} =~ /GNU/ );
     return 1;
-}
-
-sub _setup_mswin {
-    my $self = shift;
-
-    # bsdtar is always preferred on Windows
-    my $tar_path = which('bsdtar');
-    $tar_path = which('tar') unless ( defined($tar_path) );
-
-    if ( $tar_path =~ /\s/ ) {
-
-        # double quoting will be required is there is a space
-        $tar_path = qq($tar_path);
-    }
-    $self->{tar} = $tar_path;
 }
 
 =head2 tardir
