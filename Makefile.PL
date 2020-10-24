@@ -53,13 +53,16 @@ my %WriteMakefileArgs = (
     'NAME'             => 'Archive::Tar::Wrapper',
     'VERSION'          => $module_version,
     'MIN_PERL_VERSION' => 5.008001,
+    'NO_META'          => 0,
+    'LICENSE'          => 'gpl_3',
     'PREREQ_PM'        => {
         'File::Temp'    => 0,
         'Cwd'           => 0,
         'Log::Log4perl' => 0,
         'IPC::Run'      => 0,
-        'File::Which'   => 0
-    },
+        'File::Which'   => 0,
+        'CPAN::Meta'    => 0
+    }
 );
 
 if ( $ExtUtils::MakeMaker::VERSION >= 6.46 ) {
@@ -96,11 +99,9 @@ if ( $ExtUtils::MakeMaker::VERSION >= 6.50 ) {
 # Test::More::is_deeply is required for testing
 if ( $ExtUtils::MakeMaker::VERSION >= 6.64 ) {
     $WriteMakefileArgs{TEST_REQUIRES}->{'Test::Simple'} = 1.302073;
-    $WriteMakefileArgs{TEST_REQUIRES}->{'Dumbbench'}    = 0.111;
 }
 else {
     $WriteMakefileArgs{PREREQ_PM}->{'Test::Simple'} = 1.302073;
-    $WriteMakefileArgs{PREREQ_PM}->{'Dumbbench'}    = 0.111;
 }
 
 if ( $ExtUtils::MakeMaker::VERSION >= 6.52 ) {
@@ -118,6 +119,6 @@ if ( $] >= 5.005 ) {
     ];
 }
 
-$WriteMakefileArgs{LICENSE} = 'gpl_3'
-  if ( $ExtUtils::MakeMaker::VERSION >= 6.3002 );
+delete $WriteMakefileArgs{LICENSE} if ( $ExtUtils::MakeMaker::VERSION < 6.31 );
+
 WriteMakefile(%WriteMakefileArgs);
